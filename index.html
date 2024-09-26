@@ -115,9 +115,9 @@
 
         <h2>Сохраненные пароли:</h2>
         <ul>
-            {% for service, password in passwords.items() %}
+            {% for service, data in passwords.items() %}
             <li>
-                <strong>{{ service }}</strong>: {{ password }}
+                <strong>{{ service }}</strong> - Логин: {{ data['login'] }} | Пароль: {{ data['password'] }}
                 <form action="/delete/{{ service }}" method="POST">
                     <button type="submit">Удалить</button>
                 </form>
@@ -128,4 +128,5 @@
 
 </body>
 </html>
+
 
