@@ -38,7 +38,8 @@ def save_passwords(passwords):
 def index():
     if 'logged_in' in session and session['logged_in']:
         passwords = load_passwords()
-        decrypted_passwords = {k: cipher.decrypt(v.encode()).decode() for k, v in passwords.items()}
+        # Расшифровываем только поле пароля
+        decrypted_passwords = {k: {'login': v['login'], 'password': cipher.decrypt(v['password'].encode()).decode()} for k, v in passwords.items()}
         return render_template('index.html', passwords=decrypted_passwords, username=session.get('username'))
     else:
         return redirect(url_for('login'))
@@ -51,7 +52,7 @@ def login():
         password = request.form['password']
         
         # Простая проверка логина и пароля
-        if username == 'admin' and password == '':  # Замените на свой логин/пароль
+        if username == '' and password == '':  # Замените на свой логин/пароль
             session['logged_in'] = True
             session['username'] = username  # Сохраняем логин в сессии для отображения на странице
             return redirect(url_for('index'))  # Перенаправление на главную страницу после успешной авторизации
@@ -70,17 +71,27 @@ def logout():
 def add_password():
     if 'logged_in' in session and session['logged_in']:
         service = request.form['service']
+        login = request.form['login']  # Добавляем поле логина
         password = request.form['password']
 
         encrypted_password = cipher.encrypt(password.encode()).decode()
 
+        # Загружаем уже существующие пароли
         passwords = load_passwords()
-        passwords[service] = encrypted_password
+
+        # Сохраняем данные: сервис, логин и зашифрованный пароль
+        passwords[service] = {
+            'login': login,
+            'password': encrypted_password
+        }
+
+        # Сохраняем обновленные данные в файл
         save_passwords(passwords)
 
         return redirect(url_for('index'))
     else:
         return redirect(url_for('login'))
+
 
 @app.route('/delete/<service>', methods=['POST'])
 def delete_password(service):
@@ -95,6 +106,4 @@ def delete_password(service):
         return redirect(url_for('login'))
 
 if __name__ == '__main__':
-    app.run(debug=True)
-
     app.run(debug=True)
