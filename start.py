@@ -39,7 +39,7 @@ def index():
     if 'logged_in' in session and session['logged_in']:
         passwords = load_passwords()
         decrypted_passwords = {k: cipher.decrypt(v.encode()).decode() for k, v in passwords.items()}
-        return render_template('index.html', passwords=decrypted_passwords)
+        return render_template('index.html', passwords=decrypted_passwords, username=session.get('username'))
     else:
         return redirect(url_for('login'))
 
@@ -51,8 +51,9 @@ def login():
         password = request.form['password']
         
         # Простая проверка логина и пароля
-        if username == 'admin' and password == '123456789':  # Замените на свой логин/пароль
+        if username == 'admin' and password == '':  # Замените на свой логин/пароль
             session['logged_in'] = True
+            session['username'] = username  # Сохраняем логин в сессии для отображения на странице
             return redirect(url_for('index'))  # Перенаправление на главную страницу после успешной авторизации
         else:
             flash('Неверные имя пользователя или пароль')  # Сообщение об ошибке
@@ -62,6 +63,7 @@ def login():
 @app.route('/logout')
 def logout():
     session.pop('logged_in', None)  # Удалить статус авторизации
+    session.pop('username', None)  # Удалить имя пользователя из сессии
     return redirect(url_for('login'))
 
 @app.route('/add', methods=['POST'])
@@ -93,4 +95,6 @@ def delete_password(service):
         return redirect(url_for('login'))
 
 if __name__ == '__main__':
+    app.run(debug=True)
+
     app.run(debug=True)
