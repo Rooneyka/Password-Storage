@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Авторизация</title>
+    <title>Авторизация - Концерн Русич</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -15,25 +15,25 @@
             align-items: center;
             height: 100vh;
         }
-        .login-container {
+        .login-box {
             background-color: white;
             padding: 40px;
             border-radius: 10px;
             box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
             width: 300px;
         }
-        .login-container h1 {
+        .login-box h1 {
             text-align: center;
             margin-bottom: 20px;
         }
-        .login-container input[type="text"], .login-container input[type="password"] {
+        .login-box input[type="text"], .login-box input[type="password"] {
             width: 100%;
             padding: 10px;
             margin-bottom: 10px;
             border: 1px solid #ccc;
             border-radius: 5px;
         }
-        .login-container button {
+        .login-box button {
             width: 100%;
             padding: 10px;
             background-color: #007bff;
@@ -42,7 +42,7 @@
             border-radius: 5px;
             cursor: pointer;
         }
-        .login-container button:hover {
+        .login-box button:hover {
             background-color: #0056b3;
         }
         .error-message {
@@ -52,7 +52,7 @@
     </style>
 </head>
 <body>
-    <div class="login-container">
+    <div class="login-box">
         <h1>Авторизация</h1>
         <form action="{{ url_for('login') }}" method="POST">
             <div>
