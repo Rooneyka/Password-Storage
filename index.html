@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Авторизация</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+        .login-container {
+            background-color: white;
+            padding: 40px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            width: 300px;
+        }
+        .login-container h1 {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        .login-container input[type="text"], .login-container input[type="password"] {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+        .login-container button {
+            width: 100%;
+            padding: 10px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        .login-container button:hover {
+            background-color: #0056b3;
+        }
+        .error-message {
+            color: red;
+            margin-bottom: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="login-container">
+        <h1>Авторизация</h1>
+        <form action="{{ url_for('login') }}" method="POST">
+            <div>
+                <label for="username">Логин:</label>
+                <input type="text" id="username" name="username" required>
+            </div>
+            <div>
+                <label for="password">Пароль:</label>
+                <input type="password" id="password" name="password" required>
+            </div>
+            {% if error %}
+            <div class="error-message">{{ error }}</div>
+            {% endif %}
+            <button type="submit">Вход</button>
+        </form>
+    </div>
+</body>
+</html>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <div> <h1>"НАЗВАНИЕ ОРГАНИЗАЦИИ"</h1>/ </div>
+    <title>Хранилище паролей</title>
+</head>
+<body>
+<body style="--primary-color-900: #5B14B7; --primary-color-300: #EEE8F5; --primary-color-200: #F0F0F5; --primary-color-100: #F8F7FA; --primary-color: #9747FF; --info-color: var(--c-blue); --active-element-bg: var(--primary-color-300); --svg-stroke-hover: var(--primary-color-900); --svg-fill-hover: var(--primary-color-900); --link-hover: var(--primary-color-900); --bs-primary: var(--primary-color);"
+    <h1>Хранилище паролей</h1>
+
+    <form action="/add" method="POST">
+        <input type="text" name="service" placeholder="Сервис" required>
+        <input type="text" name="login" placeholder="Логин" required>
+        <input type="password" name="password" placeholder="Пароль" required>
+        <button type="submit">Добавить</button>
+    </form>
+
+    <h2>Сохраненные пароли:</h2>
+    <ul>
+        {% for service, password in passwords.items() %}
+            <li>
+                <strong>{{ service }}</strong>: {{ password }}
+                <form action="/delete/{{ service }}" method="POST" style="display:inline;">
+                    <button type="submit">Удалить</button>
+                </form>
+            </li>
+        {% endfor %}
+    </ul>
+</body>
+</html>
