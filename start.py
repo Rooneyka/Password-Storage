@@ -6,7 +6,7 @@ import json
 app = Flask(__name__)
 
 # Секретный ключ для сессий
-app.secret_key = 'zgso4YpFo7w1MbpT5LaXMSJvaLj40-s6Q4t26RQBuPM='
+app.secret_key = ''
 
 # Путь к файлу для хранения паролей
 PASSWORDS_FILE = 'passwords.json'
@@ -51,7 +51,7 @@ def login():
         password = request.form['password']
         
         # Простая проверка логина и пароля
-        if username == 'admin' and password == 'ad123456789':  # Замените на свой логин/пароль
+        if username == 'admin' and password == '123456789':  # Замените на свой логин/пароль
             session['logged_in'] = True
             return redirect(url_for('index'))  # Перенаправление на главную страницу после успешной авторизации
         else:
