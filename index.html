@@ -3,130 +3,85 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>logo company</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            background-color: #f4f4f4;
-            margin: 0;
-            padding: 20px;
-        }
-        .header {
-            background-color: #5B14B7;
-            padding: 10px;
-            color: white;
-            text-align: center;
-        }
-        .password-container {
-            margin: 20px auto;
-            width: 500px;
-            background-color: white;
-            padding: 20px;
-            border-radius: 10px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-        }
-        .password-container h2 {
-            color: #5B14B7;
-            margin-bottom: 20px;
-        }
-        .password-container ul {
-            list-style-type: none;
-            padding: 0;
-        }
-        .password-container li {
-            background-color: #EEE8F5;
-            margin-bottom: 10px;
-            padding: 15px;
-            border-radius: 5px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-        .password-container form {
-            display: inline;
-        }
-        .password-container button {
-            background-color: #f44336;
-            color: white;
-            border: none;
-            padding: 5px 10px;
-            cursor: pointer;
-            border-radius: 5px;
-        }
-        .password-container button:hover {
-            background-color: #d32f2f;
-        }
-        .add-form {
-            display: flex;
-            gap: 10px;
-            margin-bottom: 20px;
-        }
-        .add-form input {
-            padding: 10px;
-            flex: 1;
-            border: 1px solid #ccc;
-            border-radius: 5px;
-        }
-        .add-form button {
-            background-color: #007bff;
-            color: white;
-            border: none;
-            padding: 10px;
-            cursor: pointer;
-            border-radius: 5px;
-        }
-        .add-form button:hover {
-            background-color: #0056b3;
-        }
-        .logout {
-            text-align: right;
-            margin-bottom: 20px;
-        }
-        .logout a {
-            text-decoration: none;
-            color: #007bff;
-        }
-        .logout a:hover {
-            color: #0056b3;
-        }
-    </style>
+    <title>Хранилище паролей</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+    <!-- Подключаем JavaScript -->
+    <script src="{{ url_for('static', filename='scripts.js') }}" defer></script>
 </head>
 <body>
+    <div class="container">
+        <!-- Логотип -->
+        <header class="header">
+            <div class="logo">
+                <h1>Концерн ВС</h1>
+            </div>
+            <div class="login-info">
+                <p>Логин: {{ username }}</p>
+            </div>
+        </header>
 
-    <!-- Шапка сайта -->
-    <div class="header">
-        <h1>logo company</h1>
+        <!-- Основная область -->
+        <main>
+            <aside class="sidebar">
+                <h2>Папки</h2>
+                <ul>
+                    <!-- Добавляем ссылки для папок -->
+                    <li><a href="{{ url_for('index', folder='folder1') }}">Папка 1</a></li>
+                    <li><a href="{{ url_for('index', folder='folder2') }}">Папка 2</a></li>
+                    <li><a href="{{ url_for('index', folder='folder3') }}">Папка 3</a></li>
+                    <li><a href="{{ url_for('index', folder='users') }}">Users</a></li>
+                    <li><a href="{{ url_for('index', folder='fio_list') }}">Фио списком</a></li>
+                </ul>
+            </aside>
+
+            <section class="content">
+                <div class="search-bar">
+                    <input type="text" placeholder="Поиск..." class="search-input">
+                </div>
+
+                <!-- Список паролей -->
+                <div class="password-list">
+                    <h2>Наименование паролей:</h2>
+                    <ul>
+                        {% for service, data in passwords.items() %}
+                            <li>
+                                <strong>{{ service }}</strong> - {{ data['login'] }} /
+                                <!-- Поле пароля, по умолчанию скрыто -->
+                                <input type="password" value="{{ data['password'] }}" class="password-field" readonly>
+                                <button class="show-password">👁️</button>
+                            </li>
+                        {% endfor %}
+                    </ul>
+                </div>
+
+                <!-- Форма для добавления нового пользователя -->
+                <div class="add-user">
+                    <h2>Добавить пользователя</h2>
+                    <form action="{{ url_for('add_password') }}" method="POST">
+                        <label for="folder">Папка:</label>
+                        <select id="folder" name="folder" required>
+                            <option value="folder1">Папка 1</option>
+                            <option value="folder2">Папка 2</option>
+                            <option value="folder3">Папка 3</option>
+                            <option value="users">Users</option>
+                            <option value="fio_list">Фио списком</option>
+                        </select>
+
+                        <label for="service">Сервис:</label>
+                        <input type="text" id="service" name="service" required>
+
+                        <label for="login">Логин:</label>
+                        <input type="text" id="login" name="login" required>
+
+                        <label for="password">Пароль:</label>
+                        <input type="password" id="password" name="password" required>
+
+                        <button type="submit" class="add-btn">Добавить</button>
+                    </form>
+                </div>
+            </section>
+        </main>
     </div>
-
-    <!-- Кнопка выхода -->
-    <div class="logout">
-        <a href="{{ url_for('logout') }}">Выйти</a>
-    </div>
-
-    <!-- Страница хранилища паролей -->
-    <div class="password-container">
-        <h2>Добавить новый пароль:</h2>
-        <form class="add-form" action="/add" method="POST">
-            <input type="text" name="service" placeholder="Сервис" required>
-            <input type="text" name="login" placeholder="Логин" required>
-            <input type="password" name="password" placeholder="Пароль" required>
-            <button type="submit">Добавить</button>
-        </form>
-
-        <h2>Сохраненные пароли:</h2>
-        <ul>
-            {% for service, data in passwords.items() %}
-            <li>
-                <strong>{{ service }}</strong> - Логин: {{ data['login'] }} | Пароль: {{ data['password'] }}
-                <form action="/delete/{{ service }}" method="POST">
-                    <button type="submit">Удалить</button>
-                </form>
-            </li>
-            {% endfor %}
-        </ul>
-    </div>
-
 </body>
 </html>
-
 
