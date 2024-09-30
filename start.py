@@ -28,21 +28,31 @@ def load_passwords():
         with open(PASSWORDS_FILE, 'r') as f:
             return json.load(f)
     return {}
-
 # Сохранение паролей в файл
 def save_passwords(passwords):
     with open(PASSWORDS_FILE, 'w') as f:
         json.dump(passwords, f)
 
-@app.route('/')
+@app.route('/', methods=['GET'])
 def index():
     if 'logged_in' in session and session['logged_in']:
+        # Загружаем все пароли
         passwords = load_passwords()
-        # Расшифровываем только поле пароля
-        decrypted_passwords = {k: {'login': v['login'], 'password': cipher.decrypt(v['password'].encode()).decode()} for k, v in passwords.items()}
+        
+        # Получаем параметр папки из URL
+        folder = request.args.get('folder', 'folder1')
+        
+        # Отфильтруем пароли, если выбрана папка
+        if folder in passwords:
+            filtered_passwords = {k: passwords[k] for k in passwords if passwords[k].get('folder') == folder}
+        else:
+            filtered_passwords = passwords
+
+        decrypted_passwords = {k: cipher.decrypt(v['password'].encode()).decode() for k, v in filtered_passwords.items()}
         return render_template('index.html', passwords=decrypted_passwords, username=session.get('username'))
     else:
         return redirect(url_for('login'))
+
 
 # Маршрут для страницы авторизации
 @app.route('/login', methods=['GET', 'POST'])
@@ -52,7 +62,7 @@ def login():
         password = request.form['password']
         
         # Простая проверка логина и пароля
-        if username == '' and password == '':  # Замените на свой логин/пароль
+        if username == 'admin' and password == 'ad123456789':  # Замените на свой логин/пароль
             session['logged_in'] = True
             session['username'] = username  # Сохраняем логин в сессии для отображения на странице
             return redirect(url_for('index'))  # Перенаправление на главную страницу после успешной авторизации
@@ -71,23 +81,22 @@ def logout():
 def add_password():
     if 'logged_in' in session and session['logged_in']:
         service = request.form['service']
-        login = request.form['login']  # Добавляем поле логина
+        login = request.form['login']
         password = request.form['password']
+        folder = request.form['folder']  # Новое поле для папки
 
         encrypted_password = cipher.encrypt(password.encode()).decode()
 
-        # Загружаем уже существующие пароли
         passwords = load_passwords()
 
-        # Сохраняем данные: сервис, логин и зашифрованный пароль
+        # Добавляем в структуру папку
         passwords[service] = {
             'login': login,
-            'password': encrypted_password
+            'password': encrypted_password,
+            'folder': folder
         }
 
-        # Сохраняем обновленные данные в файл
         save_passwords(passwords)
-
         return redirect(url_for('index'))
     else:
         return redirect(url_for('login'))
@@ -107,3 +116,4 @@ def delete_password(service):
 
 if __name__ == '__main__':
     app.run(debug=True)
+
